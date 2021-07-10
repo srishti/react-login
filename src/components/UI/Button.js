@@ -1,28 +1,18 @@
 import styles from "./Button.module.css";
 
 const Button = (props) => {
-  console.log("[Button rendered]");
+  console.log("[Button] rendered");
 
-  let cssClasses = [styles.button];
-
-  switch (props.color) {
-    case "primary":
-      cssClasses.push(styles.primary);
-      break;
-    case "secondary":
-    default:
-      cssClasses.push(styles.secondary);
-      break;
-  }
+  let cssClasses = styles.button;
 
   if (props.className) {
-    cssClasses = [...cssClasses, props.className.split(" ")];
+    cssClasses = `${props.className} ${cssClasses}`;
   }
 
   return (
     <button
       type={props.type || "button"}
-      className={cssClasses.join(" ")}
+      className={cssClasses}
       onClick={props.onClick}
     >
       {props.children}

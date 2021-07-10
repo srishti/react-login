@@ -2,30 +2,31 @@ import { useState } from "react";
 
 import Header from "./components/Header/Header";
 import Login from "./components/Login/Login";
+import Home from "./components/Home/Home";
 
 const App = () => {
-  console.log("[App rendered]");
+  console.log("[App] rendered");
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   /**
    * Funtion to login to the app
    */
   const login = () => {
-    setIsLoggedIn(true);
+    setIsAuthenticated(true);
   };
 
   /**
    * Function to logout from the app
    */
   const logout = () => {
-    setIsLoggedIn(false);
+    setIsAuthenticated(false);
   };
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} onLogout={logout} />
-      <Login isLoggedIn={isLoggedIn} onLogin={login} />
+      <Header isAuthenticated={isAuthenticated} onLogout={logout} />
+      <main>{isAuthenticated ? <Home /> : <Login onLogin={login} />}</main>
     </>
   );
 };

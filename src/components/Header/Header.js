@@ -1,14 +1,14 @@
-import UserActions from "./UserActions";
+import Navigation from "./Navigation";
 
 import styles from "./Header.module.css";
 
 const Header = (props) => {
-  console.log("[Header rendered]");
+  console.log("[Header] rendered");
 
   return (
     <header className={styles.header}>
       <h1>A Typical Page</h1>
-      {props.isLoggedIn && <UserActions onLogout={props.onLogout} />}
+      {props.isAuthenticated && <Navigation onLogout={props.onLogout} />}
     </header>
   );
 };
