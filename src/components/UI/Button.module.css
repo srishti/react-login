@@ -1,11 +1,17 @@
 .button {
-  color: #fff;
   padding: 0.65rem 1.25rem;
-  background: transparent;
   border: none;
-  cursor: pointer;
   font-size: 1rem;
   letter-spacing: 0.5px;
   border-radius: 1.5rem;
+  color: #fff;
   background: hotpink;
+  cursor: pointer;
+}
+
+.button[disabled] {
+  background: lightgray;
+  color: #000;
+  background: darkgray;
+  cursor: not-allowed;
 }
