@@ -9,13 +9,22 @@ const USER_INPUT_INITIAL_VALUES = {
   email: "",
   password: "",
 };
+const INPUT_ERROR_INITIAL_VALUES = {
+  email: false,
+  password: false,
+};
 
 const Login = (props) => {
   console.log("[Login] rendered");
 
   const [userInput, setUserInput] = useState(USER_INPUT_INITIAL_VALUES);
+  const [inputError, setInputError] = useState(INPUT_ERROR_INITIAL_VALUES);
   const [isInputValid, setIsInputValid] = useState(false);
 
+  /**
+   * Function as event handler when the value inside email input textbox changes
+   * @param {Object} event
+   */
   const emailChangeHandler = (event) => {
     const newEmail = event.target.value;
 
@@ -26,13 +35,16 @@ const Login = (props) => {
       };
     });
 
-    if (validateUserInput(newEmail, userInput.password)) {
-      setIsInputValid(true);
-    } else {
-      setIsInputValid(false);
-    }
+    // set if form is valid (impacts the login button)
+    setIsInputValid(
+      validateEmail(newEmail) && validatePassword(userInput.password)
+    );
   };
 
+  /**
+   * Function as event handler when the value inside password input textbox changes
+   * @param {Object} event
+   */
   const passwordChangeHandler = (event) => {
     const newPassword = event.target.value;
 
@@ -42,11 +54,39 @@ const Login = (props) => {
         password: newPassword,
       };
     });
-    if (validateUserInput(userInput.email, newPassword)) {
-      setIsInputValid(true);
-    } else {
-      setIsInputValid(false);
-    }
+
+    // set if form is valid (impacts the login button)
+    setIsInputValid(
+      validateEmail(userInput.email) && validatePassword(newPassword)
+    );
+  };
+
+  /**
+   * Function as event handler when the email input textbox is blurred
+   * @param {Object} event
+   */
+  const emailBlurHandler = (event) => {
+    // set/unset error for email (impacts the invalid class on input field)
+    setInputError((prevState) => {
+      return {
+        ...prevState,
+        email: !validateEmail(event.target.value),
+      };
+    });
+  };
+
+  /**
+   * Function as event handler when the password input textbox is blurred
+   * @param {Object} event
+   */
+  const passwordBlurHandler = (event) => {
+    // set/unset error for password (impacts the invalid class on input field)
+    setInputError((prevState) => {
+      return {
+        ...prevState,
+        password: !validatePassword(event.target.value),
+      };
+    });
   };
 
   /**
@@ -86,42 +126,43 @@ const Login = (props) => {
   };
 
   /**
-   * Function to validate user input
-   * @param {String} email
-   * @param {String} password
-   * @returns true - when both email & password are valid
-   *          false - when either email of password is invalid
-   */
-  const validateUserInput = (email, password) => {
-    return validateEmail(email) && validatePassword(password);
-  };
-
-  /**
    * Function serving as event handler when form is submitted
    * @param {object} event
    */
   const submitFormHandler = (event) => {
     event.preventDefault();
 
-    setIsInputValid(true);
-    setUserInput(USER_INPUT_INITIAL_VALUES);
-
+    // form is submitted only when the button is enabled & button is enabled only when current email & password in text fields are valid
     props.onLogin();
+
+    // reset the user input and errors when the form is submitted
+    setUserInput(USER_INPUT_INITIAL_VALUES);
+    setInputError(INPUT_ERROR_INITIAL_VALUES);
+    setIsInputValid(true);
   };
 
   return (
     <Card className={styles["login"]}>
       <form className={styles["login-form"]} onSubmit={submitFormHandler}>
-        <div className={styles["form-control"]}>
+        <div
+          className={`${styles["form-control"]} ${
+            inputError.email && styles.invalid
+          }`}
+        >
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
             value={userInput.email}
             onChange={emailChangeHandler}
+            onBlur={emailBlurHandler}
           />
         </div>
-        <div className={styles["form-control"]}>
+        <div
+          className={`${styles["form-control"]} ${
+            inputError.password && styles.invalid
+          }`}
+        >
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -129,6 +170,7 @@ const Login = (props) => {
             autoComplete="on"
             value={userInput.password}
             onChange={passwordChangeHandler}
+            onBlur={passwordBlurHandler}
           />
         </div>
         <Button

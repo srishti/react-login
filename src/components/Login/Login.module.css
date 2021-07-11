@@ -37,3 +37,12 @@
 .form-control-button {
   padding: 0.75rem 3rem;
 }
+
+.form-control.invalid input {
+  border-color: red;
+}
+
+.form-control.invalid input:focus,
+.form-control.invalid input:active {
+  background: #f0a9a9;
+}
