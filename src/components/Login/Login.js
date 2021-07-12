@@ -156,6 +156,7 @@ const Login = (props) => {
             value={userInput.email}
             onChange={emailChangeHandler}
             onBlur={emailBlurHandler}
+            autoComplete="email"
           />
         </div>
         <div
@@ -167,10 +168,10 @@ const Login = (props) => {
           <input
             type="password"
             id="password"
-            autoComplete="on"
             value={userInput.password}
             onChange={passwordChangeHandler}
             onBlur={passwordBlurHandler}
+            autoComplete="password"
           />
         </div>
         <Button
