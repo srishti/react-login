@@ -9,9 +9,46 @@ const USER_INPUT_INITIAL_VALUES = {
   email: "",
   password: "",
 };
+
 const INPUT_ERROR_INITIAL_VALUES = {
   email: false,
   password: false,
+};
+
+/**
+ * Function to validate email
+ * @param {String} email
+ * @returns true - when email is valid
+ *          false - when email is invalid
+ */
+const validateEmail = (email) => {
+  let isEmailValid = false;
+
+  // CREDITS - https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+  const regex =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  if (email.trim() && regex.test(email)) {
+    isEmailValid = true;
+  }
+
+  return isEmailValid;
+};
+
+/**
+ * Function to validate password
+ * @param {String} password
+ * @returns true - when password is valid
+ *          false - when password is invalid
+ */
+const validatePassword = (password) => {
+  let isPasswordValid = false;
+
+  if (password.trim() && password.length >= 7) {
+    isPasswordValid = true;
+  }
+
+  return isPasswordValid;
 };
 
 const Login = (props) => {
@@ -19,7 +56,7 @@ const Login = (props) => {
 
   const [userInput, setUserInput] = useState(USER_INPUT_INITIAL_VALUES);
   const [inputError, setInputError] = useState(INPUT_ERROR_INITIAL_VALUES);
-  const [isInputValid, setIsInputValid] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   /**
    * Function as event handler when the value inside email input textbox changes
@@ -36,7 +73,7 @@ const Login = (props) => {
     });
 
     // set if form is valid (impacts the login button)
-    setIsInputValid(
+    setIsFormValid(
       validateEmail(newEmail) && validatePassword(userInput.password)
     );
   };
@@ -56,7 +93,7 @@ const Login = (props) => {
     });
 
     // set if form is valid (impacts the login button)
-    setIsInputValid(
+    setIsFormValid(
       validateEmail(userInput.email) && validatePassword(newPassword)
     );
   };
@@ -90,42 +127,6 @@ const Login = (props) => {
   };
 
   /**
-   * Function to validate email
-   * @param {String} email
-   * @returns true - when email is valid
-   *          false - when email is invalid
-   */
-  const validateEmail = (email) => {
-    let isEmailValid = false;
-
-    // CREDITS - https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-    const regex =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (email.trim() && regex.test(email)) {
-      isEmailValid = true;
-    }
-
-    return isEmailValid;
-  };
-
-  /**
-   * Function to validate password
-   * @param {String} password
-   * @returns true - when password is valid
-   *          false - when password is invalid
-   */
-  const validatePassword = (password) => {
-    let isPasswordValid = false;
-
-    if (password.trim() && password.length >= 7) {
-      isPasswordValid = true;
-    }
-
-    return isPasswordValid;
-  };
-
-  /**
    * Function serving as event handler when form is submitted
    * @param {object} event
    */
@@ -138,7 +139,7 @@ const Login = (props) => {
     // reset the user input and errors when the form is submitted
     setUserInput(USER_INPUT_INITIAL_VALUES);
     setInputError(INPUT_ERROR_INITIAL_VALUES);
-    setIsInputValid(true);
+    setIsFormValid(false);
   };
 
   return (
@@ -154,9 +155,9 @@ const Login = (props) => {
             type="email"
             id="email"
             value={userInput.email}
+            autoComplete="email"
             onChange={emailChangeHandler}
             onBlur={emailBlurHandler}
-            autoComplete="email"
           />
         </div>
         <div
@@ -168,16 +169,16 @@ const Login = (props) => {
           <input
             type="password"
             id="password"
+            autoComplete="password"
             value={userInput.password}
             onChange={passwordChangeHandler}
             onBlur={passwordBlurHandler}
-            autoComplete="password"
           />
         </div>
         <Button
+          type="submit"
           className={styles["form-control-button"]}
-          onClick={submitFormHandler}
-          disabled={!isInputValid}
+          disabled={!isFormValid}
         >
           Login
         </Button>
