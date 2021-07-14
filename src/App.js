@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Header from "./components/Header/Header";
 import Login from "./components/Login/Login";
@@ -9,10 +9,19 @@ const App = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    console.log("[App - useEffect] Callback");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (isLoggedIn === "1") {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   /**
    * Funtion to login to the app
    */
   const login = () => {
+    localStorage.setItem("isLoggedIn", "1");
     setIsAuthenticated(true);
   };
 
@@ -20,6 +29,7 @@ const App = () => {
    * Function to logout from the app
    */
   const logout = () => {
+    localStorage.removeItem("isLoggedIn");
     setIsAuthenticated(false);
   };
 

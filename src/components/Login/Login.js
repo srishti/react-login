@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card from "../UI/Card";
 import Button from "../UI/Button";
@@ -58,6 +58,24 @@ const Login = (props) => {
   const [inputError, setInputError] = useState(INPUT_ERROR_INITIAL_VALUES);
   const [isFormValid, setIsFormValid] = useState(false);
 
+  useEffect(() => {
+    console.log("[Login - useEffect] Callback");
+
+    const timer = setTimeout(() => {
+      console.log("[Login - useEffect] Checking Form Validity inside Timer");
+
+      // set if form is valid (impacts the login button)
+      setIsFormValid(
+        validateEmail(userInput.email) && validatePassword(userInput.password)
+      );
+    }, 500);
+
+    return () => {
+      console.log("[Login - useEffect] Cleanup");
+      clearTimeout(timer);
+    };
+  }, [userInput]);
+
   /**
    * Function as event handler when the value inside email input textbox changes
    * @param {Object} event
@@ -71,11 +89,6 @@ const Login = (props) => {
         email: newEmail,
       };
     });
-
-    // set if form is valid (impacts the login button)
-    setIsFormValid(
-      validateEmail(newEmail) && validatePassword(userInput.password)
-    );
   };
 
   /**
@@ -91,11 +104,6 @@ const Login = (props) => {
         password: newPassword,
       };
     });
-
-    // set if form is valid (impacts the login button)
-    setIsFormValid(
-      validateEmail(userInput.email) && validatePassword(newPassword)
-    );
   };
 
   /**
