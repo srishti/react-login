@@ -143,11 +143,6 @@ const Login = (props) => {
 
     // form is submitted only when the button is enabled & button is enabled only when current email & password in text fields are valid
     props.onLogin();
-
-    // reset the user input and errors when the form is submitted
-    setUserInput(USER_INPUT_INITIAL_VALUES);
-    setInputError(INPUT_ERROR_INITIAL_VALUES);
-    setIsFormValid(false);
   };
 
   return (
