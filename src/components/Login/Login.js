@@ -1,18 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 
 import styles from "./Login.module.css";
 
-const USER_INPUT_INITIAL_VALUES = {
-  email: "",
-  password: "",
-};
-
-const INPUT_ERROR_INITIAL_VALUES = {
-  email: false,
-  password: false,
+const INITIAL_STATE = {
+  value: "",
+  isValid: null,
 };
 
 /**
@@ -51,12 +46,53 @@ const validatePassword = (password) => {
   return isPasswordValid;
 };
 
+const emailReducer = (state, action) => {
+  switch (action.type) {
+    case "INPUT_CHANGE":
+      return {
+        ...state,
+        value: action.payload,
+      };
+    case "INPUT_BLUR":
+      return {
+        ...state,
+        isValid: validateEmail(state.value),
+      };
+    default:
+      return state;
+  }
+};
+
+const passwordReducer = (state, action) => {
+  switch (action.type) {
+    case "INPUT_CHANGE":
+      return {
+        ...state,
+        value: action.payload,
+      };
+    case "INPUT_BLUR":
+      return {
+        ...state,
+        isValid: validatePassword(state.value),
+      };
+    default:
+      return state;
+  }
+};
+
 const Login = (props) => {
   console.log("[Login] rendered");
 
-  const [userInput, setUserInput] = useState(USER_INPUT_INITIAL_VALUES);
-  const [inputError, setInputError] = useState(INPUT_ERROR_INITIAL_VALUES);
+  const [email, dispatchEmail] = useReducer(emailReducer, INITIAL_STATE);
+  const [password, dispatchPassword] = useReducer(
+    passwordReducer,
+    INITIAL_STATE
+  );
+
   const [isFormValid, setIsFormValid] = useState(false);
+
+  const { value: emailValue } = email;
+  const { value: passwordValue } = password;
 
   useEffect(() => {
     console.log("[Login - useEffect] Callback");
@@ -66,7 +102,7 @@ const Login = (props) => {
 
       // set if form is valid (impacts the login button)
       setIsFormValid(
-        validateEmail(userInput.email) && validatePassword(userInput.password)
+        validateEmail(email.value) && validatePassword(password.value)
       );
     }, 500);
 
@@ -74,21 +110,14 @@ const Login = (props) => {
       console.log("[Login - useEffect] Cleanup");
       clearTimeout(timer);
     };
-  }, [userInput]);
+  }, [emailValue, passwordValue]);
 
   /**
    * Function as event handler when the value inside email input textbox changes
    * @param {Object} event
    */
   const emailChangeHandler = (event) => {
-    const newEmail = event.target.value;
-
-    setUserInput((prevState) => {
-      return {
-        ...prevState,
-        email: newEmail,
-      };
-    });
+    dispatchEmail({ type: "INPUT_CHANGE", payload: event.target.value });
   };
 
   /**
@@ -96,14 +125,7 @@ const Login = (props) => {
    * @param {Object} event
    */
   const passwordChangeHandler = (event) => {
-    const newPassword = event.target.value;
-
-    setUserInput((prevState) => {
-      return {
-        ...prevState,
-        password: newPassword,
-      };
-    });
+    dispatchPassword({ type: "INPUT_CHANGE", payload: event.target.value });
   };
 
   /**
@@ -112,12 +134,7 @@ const Login = (props) => {
    */
   const emailBlurHandler = (event) => {
     // set/unset error for email (impacts the invalid class on input field)
-    setInputError((prevState) => {
-      return {
-        ...prevState,
-        email: !validateEmail(event.target.value),
-      };
-    });
+    dispatchEmail({ type: "INPUT_BLUR" });
   };
 
   /**
@@ -126,12 +143,7 @@ const Login = (props) => {
    */
   const passwordBlurHandler = (event) => {
     // set/unset error for password (impacts the invalid class on input field)
-    setInputError((prevState) => {
-      return {
-        ...prevState,
-        password: !validatePassword(event.target.value),
-      };
-    });
+    dispatchPassword({ type: "INPUT_BLUR" });
   };
 
   /**
@@ -141,8 +153,10 @@ const Login = (props) => {
   const submitFormHandler = (event) => {
     event.preventDefault();
 
-    // form is submitted only when the button is enabled & button is enabled only when current email & password in text fields are valid
-    props.onLogin();
+    // form can now be submitted when user types in a valid value and quickly types an invalid value and clicks on login button before timer lapses; validate form before invoking login() method
+    if (email.isValid && password.isValid) {
+      props.onLogin();
+    }
   };
 
   return (
@@ -150,14 +164,14 @@ const Login = (props) => {
       <form className={styles["login-form"]} onSubmit={submitFormHandler}>
         <div
           className={`${styles["form-control"]} ${
-            inputError.email && styles.invalid
+            email.isValid === false && styles.invalid
           }`}
         >
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
-            value={userInput.email}
+            value={email.value}
             autoComplete="email"
             onChange={emailChangeHandler}
             onBlur={emailBlurHandler}
@@ -165,7 +179,7 @@ const Login = (props) => {
         </div>
         <div
           className={`${styles["form-control"]} ${
-            inputError.password && styles.invalid
+            password.isValid === false && styles.invalid
           }`}
         >
           <label htmlFor="password">Password</label>
@@ -173,7 +187,7 @@ const Login = (props) => {
             type="password"
             id="password"
             autoComplete="password"
-            value={userInput.password}
+            value={password.value}
             onChange={passwordChangeHandler}
             onBlur={passwordBlurHandler}
           />
