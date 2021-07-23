@@ -3,6 +3,7 @@ import { useEffect, useState, useReducer, useContext } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import AuthContext from "../../context/auth-context";
+import Input from "../UI/Input";
 
 import styles from "./Login.module.css";
 
@@ -165,36 +166,30 @@ const Login = (props) => {
   return (
     <Card className={styles["login"]}>
       <form className={styles["login-form"]} onSubmit={submitFormHandler}>
-        <div
-          className={`${styles["form-control"]} ${
-            email.isValid === false && styles.invalid
-          }`}
-        >
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email.value}
-            autoComplete="email"
-            onChange={emailChangeHandler}
-            onBlur={emailBlurHandler}
-          />
-        </div>
-        <div
-          className={`${styles["form-control"]} ${
-            password.isValid === false && styles.invalid
-          }`}
-        >
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            autoComplete="password"
-            value={password.value}
-            onChange={passwordChangeHandler}
-            onBlur={passwordBlurHandler}
-          />
-        </div>
+        <Input
+          id="email"
+          className={styles["form-control"]}
+          isValid={email.isValid}
+          label="Email"
+          type="email"
+          value={email.value}
+          autoComplete="email"
+          onChange={emailChangeHandler}
+          onBlur={emailBlurHandler}
+        />
+
+        <Input
+          id="password"
+          className={styles["form-control"]}
+          isValid={password.isValid}
+          label="Password"
+          type="password"
+          value={password.value}
+          autoComplete="password"
+          onChange={passwordChangeHandler}
+          onBlur={passwordBlurHandler}
+        />
+
         <Button
           type="submit"
           className={styles["form-control-button"]}

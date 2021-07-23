@@ -1,0 +1,23 @@
+input {
+  width: 70%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid lightgray;
+  border-radius: 0.5rem;
+}
+
+input:focus,
+input:active {
+  background: thistle;
+  border: 1px solid purple;
+  outline: none;
+}
+
+.invalid input {
+  border-color: red;
+}
+
+.invalid input:focus,
+.invalid input:active {
+  background: #f0a9a9;
+}
