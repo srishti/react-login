@@ -1,7 +1,8 @@
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useContext } from "react";
 
 import Card from "../UI/Card";
 import Button from "../UI/Button";
+import AuthContext from "../../context/auth-context";
 
 import styles from "./Login.module.css";
 
@@ -91,6 +92,8 @@ const Login = (props) => {
 
   const [isFormValid, setIsFormValid] = useState(false);
 
+  const authContext = useContext(AuthContext);
+
   const { value: emailValue } = email;
   const { value: passwordValue } = password;
 
@@ -155,7 +158,7 @@ const Login = (props) => {
 
     // form can now be submitted when user types in a valid value and quickly types an invalid value and clicks on login button before timer lapses; validate form before invoking login() method
     if (email.isValid && password.isValid) {
-      props.onLogin();
+      authContext.onLogin();
     }
   };
 
