@@ -1,4 +1,4 @@
-import { useEffect, useState, useReducer, useContext } from "react";
+import { useEffect, useState, useReducer, useContext, useRef } from "react";
 
 import Card from "../UI/Card";
 import Button from "../UI/Button";
@@ -98,6 +98,9 @@ const Login = (props) => {
   const { value: emailValue } = email;
   const { value: passwordValue } = password;
 
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
   useEffect(() => {
     console.log("[Login - useEffect] Callback");
 
@@ -160,6 +163,12 @@ const Login = (props) => {
     // form can now be submitted when user types in a valid value and quickly types an invalid value and clicks on login button before timer lapses; validate form before invoking login() method
     if (email.isValid && password.isValid) {
       authContext.onLogin();
+    } else if (!email.isValid) {
+      // if email is not valid, focus it
+      emailInputRef.current.focus();
+    } else {
+      // if password is not valid, focus it
+      passwordInputRef.current.focus();
     }
   };
 
@@ -167,6 +176,7 @@ const Login = (props) => {
     <Card className={styles["login"]}>
       <form className={styles["login-form"]} onSubmit={submitFormHandler}>
         <Input
+          ref={emailInputRef}
           id="email"
           className={styles["form-control"]}
           isValid={email.isValid}
@@ -179,6 +189,7 @@ const Login = (props) => {
         />
 
         <Input
+          ref={passwordInputRef}
           id="password"
           className={styles["form-control"]}
           isValid={password.isValid}
@@ -190,11 +201,7 @@ const Login = (props) => {
           onBlur={passwordBlurHandler}
         />
 
-        <Button
-          type="submit"
-          className={styles["form-control-button"]}
-          disabled={!isFormValid}
-        >
+        <Button type="submit" className={styles["form-control-button"]}>
           Login
         </Button>
       </form>
